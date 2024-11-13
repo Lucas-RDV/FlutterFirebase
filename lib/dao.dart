@@ -13,7 +13,6 @@ class DaoFirestore {
     );
   }
 
-  // Função para salvar um veículo com um ID específico
   static Future<void> salvarVeiculo(Veiculo veiculo, String id) async {
     try {
       await db.collection("veiculos").doc(id).set(veiculo.toMap());
@@ -22,7 +21,6 @@ class DaoFirestore {
     }
   }
 
-  // Função para salvar um veículo com ID automático
   static Future<void> salvarVeiculoAutoID(Veiculo veiculo) async {
     try {
       await db.collection("veiculos").add(veiculo.toMap());
@@ -31,7 +29,6 @@ class DaoFirestore {
     }
   }
 
-  // Função para atualizar um veículo
   static Future<void> atualizarVeiculo(Veiculo veiculo, String id) async {
     try {
       await db.collection("veiculos").doc(id).update(veiculo.toMap());
@@ -40,7 +37,6 @@ class DaoFirestore {
     }
   }
 
-  // Função para excluir um veículo
   static Future<void> excluirVeiculo(String id) async {
     try {
       await db.collection("veiculos").doc(id).delete();
@@ -49,7 +45,6 @@ class DaoFirestore {
     }
   }
 
-  // Função para recuperar a lista de veículos
   static Stream<List<Veiculo>> getVeiculos() {
     return db.collection('veiculos').snapshots().map((snapshot) {
       return snapshot.docs.map((doc) {
@@ -63,7 +58,6 @@ class DaoFirestore {
     });
   }
 
-  // Função para salvar um abastecimento
   static Future<void> salvarAbastecimento(Abastecimento abastecimento, String veiculoId) async {
     try {
       await db.collection("veiculos")
@@ -75,7 +69,6 @@ class DaoFirestore {
     }
   }
 
-  // Função para recuperar os abastecimentos de um veículo
   static Stream<List<Abastecimento>> getAbastecimentos(String veiculoId) {
     return db.collection("veiculos")
       .doc(veiculoId)
