@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -15,40 +14,6 @@ class AutenticacaoFirebase {
       } else if (e.code == 'wrong-password') {
         return "Senha incorreta";
       }
-      return "Erro de autenticação";
-    }
-  }
-
-  Future<String> signInWithGoogle() async {
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-    final GoogleSignInAuthentication? googleAuth =
-        await googleUser?.authentication;
-
-    if (googleAuth?.accessToken != null && googleAuth?.idToken != null) {
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken,
-        idToken: googleAuth?.idToken,
-      );
-      await FirebaseAuth.instance.signInWithCredential(credential);
-      return "Usuário autenticado com Google";
-    } else {
-      return "Erro ao autenticar com Google";
-    }
-  }
-
-  Future<String> signIn(String email, String password) async {
-    final response = await http.post(
-      Uri.parse('https://sua-api.com/login'),
-      headers: {"Content-Type": "application/json"},
-      body: json.encode({"email": email, "password": password}),
-    );
-
-    if (response.statusCode == 200) {
-      var data = json.decode(response.body);
-      String token = data['token'];
-      // Salve o token em um armazenamento seguro
-      return "Autenticação bem-sucedida, token: $token";
-    } else {
       return "Erro de autenticação";
     }
   }
@@ -74,8 +39,6 @@ class AutenticacaoFirebase {
   Future<String> signOut() async {
     try {
       await FirebaseAuth.instance.signOut();
-      await GoogleSignIn()
-          .signOut(); // Se o usuário tiver feito login com Google, faça logout
       return "Usuário desconectado com sucesso";
     } catch (e) {
       return "Erro ao desconectar: $e";

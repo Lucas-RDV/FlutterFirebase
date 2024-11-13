@@ -1,31 +1,29 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Abastecimento {
-  String veiculoId;
-  double quantidadeLitros; 
-  double quilometragem; 
-  DateTime data; 
+  final double litros;
+  final int quilometragem;
+  final DateTime data;
 
   Abastecimento({
-    required this.veiculoId,
-    required this.quantidadeLitros,
+    required this.litros,
     required this.quilometragem,
     required this.data,
   });
-  
+
   Map<String, dynamic> toMap() {
     return {
-      'veiculoId': veiculoId,
-      'quantidadeLitros': quantidadeLitros,
+      'litros': litros,
       'quilometragem': quilometragem,
-      'data': data.toIso8601String(),
+      'data': Timestamp.fromDate(data),
     };
   }
 
   factory Abastecimento.fromMap(Map<String, dynamic> map) {
     return Abastecimento(
-      veiculoId: map['veiculoId'] ?? '',
-      quantidadeLitros: map['quantidadeLitros'] ?? 0.0,
-      quilometragem: map['quilometragem'] ?? 0.0,
-      data: DateTime.parse(map['data'] ?? DateTime.now().toIso8601String()),
+      litros: map['litros']?.toDouble() ?? 0.0,
+      quilometragem: map['quilometragem']?.toInt() ?? 0,
+      data: (map['data'] as Timestamp).toDate(),
     );
   }
 }
