@@ -1,6 +1,7 @@
 import 'package:firebase_projeto/dao.dart';
 import 'package:firebase_projeto/login.dart';
 import 'package:firebase_projeto/model/veiculo.dart';
+import 'package:firebase_projeto/perfilScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -60,7 +61,9 @@ class _HomeScreenState extends State<HomeScreen> {
               title: const Text("Home"),
               onTap: () => Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => const HomeScreen(title: 'Meus Veículos')),
+                MaterialPageRoute(
+                    builder: (context) =>
+                        const HomeScreen(title: 'Meus Veículos')),
               ),
             ),
             ListTile(
@@ -87,15 +90,16 @@ class _HomeScreenState extends State<HomeScreen> {
             ListTile(
               leading: const Icon(Icons.person),
               title: const Text("Perfil"),
-              onTap: () {
-                // Ação de Navegação para o perfil do usuário
-              },
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const PerfilScreen()),
+              ),
             ),
             // Alterado para o botão de Logout
             ListTile(
               leading: const Icon(Icons.logout),
               title: const Text("Logout"),
-              onTap: _logout,  // Chama a função de logout
+              onTap: _logout, // Chama a função de logout
             ),
           ],
         ),
@@ -126,7 +130,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         final veiculo = veiculos[index];
                         return ListTile(
                           title: Text(veiculo.nome),
-                          subtitle: Text('Modelo: ${veiculo.modelo} | Ano: ${veiculo.ano}'),
+                          subtitle: Text(
+                              'Modelo: ${veiculo.modelo} | Ano: ${veiculo.ano}'),
                         );
                       },
                     );
