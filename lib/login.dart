@@ -35,10 +35,8 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = _emailController.text;
     final password = _passwordController.text;
 
-    // Chama o método de login e recebe a mensagem de resultado
     String message = await auth.signInWithEmailPassword(email, password);
 
-    // Exibe um Snackbar com a mensagem de resultado
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
     );

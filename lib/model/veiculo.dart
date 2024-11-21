@@ -1,31 +1,31 @@
 class Veiculo {
-  String nome;
-  String modelo;
-  String ano;
-  String placa;
+  final String placa;
+  final String modelo;
+  final String userId;
+  final List<String> abastecimentos;
 
   Veiculo({
-    required this.nome,
-    required this.modelo,
-    required this.ano,
     required this.placa,
+    required this.modelo,
+    required this.userId,
+    required this.abastecimentos,
   });
 
   Map<String, dynamic> toMap() {
     return {
-      'nome': nome,
-      'modelo': modelo,
-      'ano': ano,
       'placa': placa,
+      'modelo': modelo,
+      'userId': userId,
+      'abastecimentos': abastecimentos,
     };
   }
 
   factory Veiculo.fromMap(Map<String, dynamic> map) {
     return Veiculo(
-      nome: map['nome'] ?? '',
-      modelo: map['modelo'] ?? '',
-      ano: map['ano'] ?? '',
       placa: map['placa'] ?? '',
+      modelo: map['modelo'] ?? '',
+      userId: map['userId'] ?? '',
+      abastecimentos: List<String>.from(map['abastecimentos'] ?? []),
     );
   }
 }
