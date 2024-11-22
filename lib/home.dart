@@ -1,143 +1,115 @@
-import 'package:firebase_projeto/dao.dart';
-import 'package:firebase_projeto/login.dart';
-import 'package:firebase_projeto/model/veiculo.dart';
-import 'package:firebase_projeto/perfilScreen.dart';
-import 'package:firebase_projeto/cadastroVeiculo.dart';
+import 'package:firebase_projeto/firebaseAuth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'perfil.dart';
+import 'login.dart';
+import 'meus_veiculos.dart';
+import 'adicionar_veiculo.dart';
+import 'historico_abastecimentos.dart';
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final AutenticacaoFirebase auth = AutenticacaoFirebase();
+  User? user;
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Controle de Abastecimento',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const HomeScreen(title: 'Meus Veículos'),
-    );
+  void initState() {
+    super.initState();
+    _getUser();
   }
-}
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  Future<void> _logout() async {
-    try {
-      await FirebaseAuth.instance.signOut();
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => Login()),
-      );
-    } catch (e) {
-      print("Erro ao realizar logout: $e");
-    }
+  Future<void> _getUser() async {
+    setState(() {
+      user = FirebaseAuth.instance.currentUser;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Text("Controle de Abastecimento"),
       ),
       drawer: Drawer(
         child: ListView(
           children: [
-            ListTile(
-              leading: const Icon(Icons.home),
-              title: const Text("Home"),
-              onTap: () => Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const HomeScreen(title: 'Meus Veículos')),
+            UserAccountsDrawerHeader(
+              accountName: Text(user?.displayName ?? "Usuário Anônimo"), // Nome do usuário
+              accountEmail: Text(user?.email ?? "Email não disponível"), // E-mail do usuário
+              currentAccountPicture: CircleAvatar(
+                child: Icon(Icons.person, size: 40),
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.directions_car),
-              title: const Text("Meus Veículos"),
+              leading: Icon(Icons.home),
+              title: Text("Home"),
               onTap: () {
-                // Ação para a tela de veículos
+                Navigator.pop(context);
               },
             ),
             ListTile(
-              leading: const Icon(Icons.add),
-              title: const Text("Adicionar Veículo"),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CadastroVeiculo()),
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.history),
-              title: const Text("Histórico de Abastecimentos"),
+              leading: Icon(Icons.directions_car),
+              title: Text("Meus Veículos"),
               onTap: () {
-                // Redireciona para histórico de abastecimentos
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MeusVeiculosPage()),
+                );
               },
             ),
             ListTile(
-              leading: const Icon(Icons.person),
-              title: const Text("Perfil"),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const PerfilScreen()),
-              ),
+              leading: Icon(Icons.add),
+              title: Text("Adicionar Veículo"),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AdicionarVeiculoPage()),
+                );
+              },
             ),
             ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text("Logout"),
-              onTap: _logout,
+              leading: Icon(Icons.history),
+              title: Text("Histórico de Abastecimentos"),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => HistoricoAbastecimentosPage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.person),
+              title: Text("Perfil"),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => PerfilPage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: Text("Logout"),
+              onTap: () async {
+                String message = await auth.signOut();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(message)),
+                );
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => Login()),
+                );
+              },
             ),
           ],
         ),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          const Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Text(
-              'Lista de Veículos Cadastrados:',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-          ),
-          Expanded(
-            child: StreamBuilder<List<Veiculo>>(
-              stream: DaoFirestore.getVeiculos(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return const Center(child: Text('Erro ao carregar dados'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('Nenhum veículo encontrado'));
-                } else {
-                  final veiculos = snapshot.data!;
-                  return ListView.builder(
-                    itemCount: veiculos.length,
-                    itemBuilder: (context, index) {
-                      final veiculo = veiculos[index];
-                      return ListTile(
-                        title: Text('Placa: ${veiculo.placa}'),
-                        subtitle: Text('Modelo: ${veiculo.modelo}'),
-                      );
-                    },
-                  );
-                }
-              },
-            ),
-          ),
-        ],
+      body: Center(
+        child: Text("Bem-vindo ao Controle de Abastecimento!"),
       ),
     );
   }
