@@ -1,7 +1,7 @@
-// Adicionar Veículo Page
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'model/veiculo.dart';
+import 'veiculoDAO.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AdicionarVeiculoPage extends StatefulWidget {
   @override
@@ -9,26 +9,25 @@ class AdicionarVeiculoPage extends StatefulWidget {
 }
 
 class _AdicionarVeiculoPageState extends State<AdicionarVeiculoPage> {
-  final TextEditingController _nomeController = TextEditingController();
-  final TextEditingController _modeloController = TextEditingController();
+    final TextEditingController _modeloController = TextEditingController();
   final TextEditingController _anoController = TextEditingController();
   final TextEditingController _placaController = TextEditingController();
 
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final VeiculoDAO veiculoDAO = VeiculoDAO();
+  final User? user = FirebaseAuth.instance.currentUser;
 
   Future<void> _salvarVeiculo() async {
-    if (_nomeController.text.isNotEmpty &&
-        _modeloController.text.isNotEmpty &&
+    if (_modeloController.text.isNotEmpty &&
         _anoController.text.isNotEmpty &&
         _placaController.text.isNotEmpty) {
       try {
-        await _firestore.collection('veiculos').add({
-          'nome': _nomeController.text,
-          'modelo': _modeloController.text,
-          'ano': _anoController.text,
-          'placa': _placaController.text,
-          'userId': FirebaseAuth.instance.currentUser?.uid,
-        });
+        Veiculo novoVeiculo = Veiculo(
+          id: '',
+          modelo: _modeloController.text,
+          ano: int.parse(_anoController.text),
+          placa: _placaController.text ?? '',
+        );
+        await veiculoDAO.adicionarVeiculo(novoVeiculo);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Veículo salvo com sucesso!")),
         );
@@ -55,15 +54,7 @@ class _AdicionarVeiculoPageState extends State<AdicionarVeiculoPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            TextField(
-              controller: _nomeController,
-              decoration: InputDecoration(
-                labelText: "Nome",
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 16),
-            TextField(
+                        TextField(
               controller: _modeloController,
               decoration: InputDecoration(
                 labelText: "Modelo",
