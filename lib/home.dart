@@ -7,7 +7,7 @@ import 'meus_veiculos.dart';
 import 'veiculoDAO.dart';
 import 'model/veiculo.dart';
 import 'adicionar_veiculo.dart';
-// import 'historico_abastecimentos_page.dart';
+import 'historico_abastecimentos.dart';
 import 'novo_abastecimento.dart';
 
 class HomePage extends StatefulWidget {
@@ -79,10 +79,10 @@ class _HomePageState extends State<HomePage> {
               leading: Icon(Icons.history),
               title: Text("Histórico de Abastecimentos"),
               onTap: () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => HistoricoAbastecimentosPage()),
-                // );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => HistoricoAbastecimentosPage()),
+                );
               },
             ),
             ListTile(
