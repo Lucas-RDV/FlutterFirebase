@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'veiculoDAO.dart';
 import 'model/veiculo.dart';
 import 'abastecimentoDAO.dart';
-// import 'historico_consumo_page.dart';
+import 'historico_veiculo.dart';
 
 class MeusVeiculosPage extends StatefulWidget {
   @override
@@ -58,12 +58,12 @@ class _MeusVeiculosPageState extends State<MeusVeiculosPage> {
                         IconButton(
                           icon: Icon(Icons.history),
                           onPressed: () {
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (context) => HistoricoConsumoPage(veiculoId: veiculo.id),
-                            //   ),
-                            // );
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => HistoricoVeiculoPage(veiculoId: veiculo.id),
+                              ),
+                            );
                           },
                         ),
                         IconButton(

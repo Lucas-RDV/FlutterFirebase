@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_projeto/model/abastecimento.dart';
+import 'veiculoDAO.dart';
 
 class AbastecimentoDAO {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final VeiculoDAO veiculoDAO = VeiculoDAO();
 
   Future<double> calcularMediaConsumo(String veiculoId) async {
     try {
@@ -13,7 +15,6 @@ class AbastecimentoDAO {
           .get();
 
       if (abastecimentosSnapshot.docs.length < 2) {
-        // Média de consumo requer pelo menos dois abastecimentos
         return 0.0;
       }
 
@@ -47,11 +48,25 @@ class AbastecimentoDAO {
     }
   }
 
-  Stream<List<Abastecimento>> lerAbastecimentos(String veiculoId) {
+  Stream<List<Abastecimento>> getAbastecimentosByVeiculoId(String veiculoId) {
     return _firestore
         .collection('abastecimentos')
         .where('veiculoId', isEqualTo: veiculoId)
-        .orderBy('data')
+        .orderBy('data', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => Abastecimento.fromMap(doc.data(), doc.id))
+            .toList());
+  }
+
+  Stream<List<Abastecimento>> getAbastecimentosByUserId(String userId) async* {
+    final veiculos = await veiculoDAO.getVeiculosByUserId(userId).first;
+    final veiculoIds = veiculos.map((veiculo) => veiculo.id).toList();
+
+    yield* _firestore
+        .collection('abastecimentos')
+        .where('veiculoId', whereIn: veiculoIds)
+        .orderBy('data', descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => Abastecimento.fromMap(doc.data(), doc.id))
