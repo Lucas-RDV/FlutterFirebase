@@ -57,7 +57,7 @@ class _PerfilPageState extends State<PerfilPage> {
                 labelText: "Email",
                 border: OutlineInputBorder(),
               ),
-              readOnly: true, // Email não pode ser editado
+              readOnly: true, 
             ),
             SizedBox(height: 24),
             ElevatedButton(

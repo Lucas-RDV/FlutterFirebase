@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'perfil.dart';
 import 'login.dart';
-//import 'meus_veiculos.dart';
+// import 'meus_veiculos.dart';
+import 'veiculoDAO.dart';
+import 'model/veiculo.dart';
 import 'adicionar_veiculo.dart';
-//import 'historico_abastecimentos.dart';
+// import 'historico_abastecimentos_page.dart';
+import 'novo_abastecimento.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -15,6 +18,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final AutenticacaoFirebase auth = AutenticacaoFirebase();
   User? user;
+  final VeiculoDAO veiculoDAO = VeiculoDAO();
 
   @override
   void initState() {
@@ -38,8 +42,8 @@ class _HomePageState extends State<HomePage> {
         child: ListView(
           children: [
             UserAccountsDrawerHeader(
-              accountName: Text(user?.displayName ?? "Usuário Anônimo"), // Nome do usuário
-              accountEmail: Text(user?.email ?? "Email não disponível"), // E-mail do usuário
+              accountName: Text(user?.displayName ?? "Usuário Anônimo"), 
+              accountEmail: Text(user?.email ?? "Email não disponível"), 
               currentAccountPicture: CircleAvatar(
                 child: Icon(Icons.person, size: 40),
               ),
@@ -108,8 +112,41 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      body: Center(
-        child: Text("Bem-vindo ao Controle de Abastecimento!"),
+      body: StreamBuilder<List<Veiculo>>(
+        stream: veiculoDAO.getVeiculosByUserId(user?.uid ?? ""),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text("Nenhum veículo cadastrado."));
+          }
+
+          final veiculos = snapshot.data!;
+
+          return ListView.builder(
+            itemCount: veiculos.length,
+            itemBuilder: (context, index) {
+              var veiculo = veiculos[index];
+              return ListTile(
+                title: Text(veiculo.modelo),
+                subtitle: Text("Ano: ${veiculo.ano} | Placa: ${veiculo.placa}"),
+                trailing: IconButton(
+                  icon: Icon(Icons.local_gas_station),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NovoAbastecimentoPage(veiculo: veiculo),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }

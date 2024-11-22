@@ -1,14 +1,18 @@
+
+
 class Veiculo {
   final String id;
   final String modelo;
   final int ano;
   final String placa;
+  final String userId;
 
   Veiculo({
     required this.id,
     required this.modelo,
     required this.ano,
     required this.placa,
+    required this.userId,
   });
 
   Map<String, dynamic> toMap() {
@@ -16,6 +20,7 @@ class Veiculo {
       'modelo': modelo,
       'ano': ano,
       'placa': placa,
+      'userId': userId,
     };
   }
 
@@ -25,6 +30,7 @@ class Veiculo {
       modelo: map['modelo'],
       ano: map['ano'],
       placa: map['placa'],
+      userId: map['userId'],
     );
   }
 }

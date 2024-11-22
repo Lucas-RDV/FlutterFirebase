@@ -9,7 +9,7 @@ class AdicionarVeiculoPage extends StatefulWidget {
 }
 
 class _AdicionarVeiculoPageState extends State<AdicionarVeiculoPage> {
-    final TextEditingController _modeloController = TextEditingController();
+  final TextEditingController _modeloController = TextEditingController();
   final TextEditingController _anoController = TextEditingController();
   final TextEditingController _placaController = TextEditingController();
 
@@ -25,13 +25,14 @@ class _AdicionarVeiculoPageState extends State<AdicionarVeiculoPage> {
           id: '',
           modelo: _modeloController.text,
           ano: int.parse(_anoController.text),
-          placa: _placaController.text ?? '',
+          placa: _placaController.text,
+          userId: user?.uid ?? 'desconhecido',
         );
         await veiculoDAO.adicionarVeiculo(novoVeiculo);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Veículo salvo com sucesso!")),
         );
-        Navigator.pop(context); // Retorna para a tela anterior após salvar
+        Navigator.pop(context); 
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Erro ao salvar veículo: $e")),
@@ -54,7 +55,7 @@ class _AdicionarVeiculoPageState extends State<AdicionarVeiculoPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-                        TextField(
+            TextField(
               controller: _modeloController,
               decoration: InputDecoration(
                 labelText: "Modelo",
