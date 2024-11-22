@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'perfil.dart';
 import 'login.dart';
-// import 'meus_veiculos.dart';
+import 'meus_veiculos.dart';
 import 'veiculoDAO.dart';
 import 'model/veiculo.dart';
 import 'adicionar_veiculo.dart';
@@ -59,10 +59,10 @@ class _HomePageState extends State<HomePage> {
               leading: Icon(Icons.directions_car),
               title: Text("Meus Veículos"),
               onTap: () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => MeusVeiculosPage()),
-                // );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MeusVeiculosPage()),
+                );
               },
             ),
             ListTile(
